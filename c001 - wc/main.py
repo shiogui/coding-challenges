@@ -1,4 +1,5 @@
 import sys, os, re
+import chardet
 
 def count_bytes(file_name):
     try:
@@ -29,6 +30,24 @@ def count_words(file_name):
     except Exception as e:
         print(f"Error: {e}")
 
+def count_characters(file_name):
+    try:
+        with open(file_name, 'r') as base_file:
+            data = base_file.read(1)
+        print(f"Data: {data}")
+        charset = chardet.detect(data)
+        print(f"Encoding: {charset}")
+
+        with open(file_name, 'r', encoding=charset) as file:
+            characters = file.read()
+        print(f"{len(characters)} {file_name}")
+        # 332149
+        # print(characters)
+    except FileNotFoundError:
+        print(f"Error: The file {file_name} wasn't found.")
+    except Exception as e:
+        print(f"Error: {e}")
+
 def main(argv: list[str]):
     if len(argv) < 3:
         print("Error: Missing parameters, you need to pass flag + file name.")
@@ -43,6 +62,8 @@ def main(argv: list[str]):
             count_lines(file_name)
         case "-w":
             count_words(file_name)
+        case "-m":
+            count_characters(file_name)
         case _:
             print(f"The `{flag}` flag is not a known option.")
 
